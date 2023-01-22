@@ -1,4 +1,4 @@
-import { Euler, Matrix3, Quaternion, Vector3 } from "three";
+import { Matrix3, Vector3 } from "three";
 import { Grammar } from "./main";
 
 const radians = (deg: number) => (Math.PI * deg) / 180.0;
@@ -69,7 +69,6 @@ const rotationMatrices: RotationMatrices = {
 };
 
 export const turtle3d = (
-  grammar: Grammar,
   stepSize: number,
   sentence: string[],
   startingPoint: Vector3
@@ -104,5 +103,5 @@ export const genTurtle3dVectorPath = (grammar: Grammar, n: number) => {
     startingDistanceFromCenter
   );
 
-  return turtle3d(grammar, stepSize, sentence, startingPoint);
+  return turtle3d(stepSize, sentence, startingPoint);
 };
