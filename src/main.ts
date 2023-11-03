@@ -1,13 +1,10 @@
 import {
   DoubleSide,
-  Euler,
-  Matrix3,
   Mesh,
   MeshPhongMaterial,
   PerspectiveCamera,
   Scene,
   TubeGeometry,
-  Vector3,
   WebGLRenderer,
 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -33,19 +30,19 @@ export type Grammar = {
 
 function main() {
   // note that delta of 90 is assumed
-  const hilbert2dPath: Grammar = {
-    variables: "LR",
-    axiom: "L",
-    rules: {
-      L: "+RF-LFL-FR+",
-      R: "-LF+RFR+FL-",
-    },
-    actions: {
-      F: "forward",
-      "+": "turn left",
-      "-": "turn right",
-    },
-  };
+  // const hilbert2dPath: Grammar = {
+  //   variables: "LR",
+  //   axiom: "L",
+  //   rules: {
+  //     L: "+RF-LFL-FR+",
+  //     R: "-LF+RFR+FL-",
+  //   },
+  //   actions: {
+  //     F: "forward",
+  //     "+": "turn left",
+  //     "-": "turn right",
+  //   },
+  // };
   const hilbert3dPath: Grammar = {
     variables: "X",
     axiom: "X",
