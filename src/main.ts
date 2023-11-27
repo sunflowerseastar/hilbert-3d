@@ -1,17 +1,4 @@
-import {
-  AmbientLight,
-  Color,
-  DoubleSide,
-  Fog,
-  Mesh,
-  MeshPhongMaterial,
-  PerspectiveCamera,
-  PointLight,
-  Scene,
-  TubeGeometry,
-  WebGLRenderer,
-} from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { OrbitControls } from "./OrbitControls.js";
 
 import { Path3 } from "./Path3";
 import { genTurtle3dVectorPath } from "./utility";
@@ -29,7 +16,7 @@ function main() {
 /*
  * camera, scene, light, renderer
  */
-  const camera = new PerspectiveCamera(
+  const camera = new THREE.PerspectiveCamera(
     60,
     window.innerWidth / window.innerHeight,
     1,
@@ -37,31 +24,31 @@ function main() {
   );
   camera.position.set(76, 58, 90);
 
-  const scene = new Scene();
+  const scene = new THREE.Scene();
 
-  scene.background = new Color(0xf4f4f4);
+  scene.background = new THREE.Color(0xf4f4f4);
 
-  const ambientLight = new AmbientLight(0x000000);
+  const ambientLight = new THREE.AmbientLight(0x000000);
   scene.add(ambientLight);
 
-  const light1 = new PointLight(0xffffff, 1, 0);
+  const light1 = new THREE.PointLight(0xffffff, 1, 0);
   light1.position.set(0, 200, 0);
   scene.add(light1);
 
-  const light2 = new PointLight(0xffffff, 1, 0);
+  const light2 = new THREE.PointLight(0xffffff, 1, 0);
   light2.position.set(100, 200, 100);
   scene.add(light2);
 
-  const light3 = new PointLight(0xffffff, 1, 0);
+  const light3 = new THREE.PointLight(0xffffff, 1, 0);
   light3.position.set(-100, -200, -100);
   scene.add(light3);
 
   const color = 0xffffff;
   const near = 60;
   const far = 280;
-  scene.fog = new Fog(color, near, far);
+  scene.fog = new THREE.Fog(color, near, far);
 
-  const renderer = new WebGLRenderer({ antialias: true });
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -122,7 +109,7 @@ function main() {
   const radiusSegments = 32;
   const closed = false;
 
-  var geometry = new TubeGeometry(
+  var geometry = new THREE.TubeGeometry(
     path,
     pathSegments,
     tubeRadius,
@@ -130,14 +117,14 @@ function main() {
     closed
   );
 
-  const meshMaterial = new MeshPhongMaterial({
+  const meshMaterial = new THREE.MeshPhongMaterial({
     color: 0x000000,
     emissive: 0x242424,
     shininess: 100,
-    side: DoubleSide,
+    side: THREE.DoubleSide,
     flatShading: false,
   });
-  const mesh = new Mesh(geometry, meshMaterial);
+  const mesh = new THREE.Mesh(geometry, meshMaterial);
   scene.add(mesh);
 
   const controls = new OrbitControls(camera, renderer.domElement);

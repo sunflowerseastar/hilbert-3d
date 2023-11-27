@@ -1,4 +1,3 @@
-import { Matrix3, Vector3 } from "three";
 import { Grammar } from "./main";
 
 const radians = (deg: number) => (Math.PI * deg) / 180.0;
@@ -57,24 +56,24 @@ const rotationMatrixRH = (d: number) => [
 ];
 
 type RotationMatrices = {
-  [key: string]: Matrix3;
+  [key: string]: THREE.Matrix3;
 };
 const rotationMatrices: RotationMatrices = {
-  "+": new Matrix3().fromArray(rotationMatrixRU(radians(-90))),
-  "-": new Matrix3().fromArray(rotationMatrixRU(radians(90))),
-  "&": new Matrix3().fromArray(rotationMatrixRL(radians(-90))),
-  "^": new Matrix3().fromArray(rotationMatrixRL(radians(90))),
-  "<": new Matrix3().fromArray(rotationMatrixRH(radians(-90))),
-  ">": new Matrix3().fromArray(rotationMatrixRH(radians(90))),
+  "+": new THREE.Matrix3().fromArray(rotationMatrixRU(radians(-90))),
+  "-": new THREE.Matrix3().fromArray(rotationMatrixRU(radians(90))),
+  "&": new THREE.Matrix3().fromArray(rotationMatrixRL(radians(-90))),
+  "^": new THREE.Matrix3().fromArray(rotationMatrixRL(radians(90))),
+  "<": new THREE.Matrix3().fromArray(rotationMatrixRH(radians(-90))),
+  ">": new THREE.Matrix3().fromArray(rotationMatrixRH(radians(90))),
 };
 
 export const turtle3d = (
   stepSize: number,
   sentence: string[],
-  startingPoint: Vector3
+  startingPoint: THREE.Vector3
 ) => {
   let turtlePath = [startingPoint];
-  let turtleHeading = new Matrix3();
+  let turtleHeading = new THREE.Matrix3();
   let turtlePosition = startingPoint;
 
   for (let action of sentence) {
@@ -83,9 +82,9 @@ export const turtle3d = (
       turtleHeading.multiply(rotationMatrices[action]);
     } else if (action === "F") {
       // move forward
-      const newPosition2: Vector3 = turtlePosition
+      const newPosition2: THREE.Vector3 = turtlePosition
         .clone()
-        .add(new Vector3(stepSize, 0, 0).applyMatrix3(turtleHeading).round());
+        .add(new THREE.Vector3(stepSize, 0, 0).applyMatrix3(turtleHeading).round());
       turtlePosition = newPosition2;
       turtlePath.push(newPosition2);
     }
@@ -97,7 +96,7 @@ export const genTurtle3dVectorPath = (grammar: Grammar, n: number) => {
   const sentence = getSentence(grammar, n);
   const stepSize = n > 1 ? 10 / (n - 1) : 10;
   const startingDistanceFromCenter: number = stepSize * (Math.pow(2, n) - 1);
-  const startingPoint: Vector3 = new Vector3(
+  const startingPoint: THREE.Vector3 = new THREE.Vector3(
     -startingDistanceFromCenter,
     -startingDistanceFromCenter,
     startingDistanceFromCenter

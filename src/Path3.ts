@@ -1,6 +1,4 @@
-import { CatmullRomCurve3, Curve, Vector, Vector3 } from "three";
-
-class Path3 extends CatmullRomCurve3 {
+class Path3 extends THREE.CatmullRomCurve3 {
   getPoint(t: number) {
     const points = this.points;
     const l = points.length;
