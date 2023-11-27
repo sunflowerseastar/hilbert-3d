@@ -5,13 +5,13 @@ const radians = (deg: number) => (Math.PI * deg) / 180.0;
 // l-system
 const rewriteSentence = (grammar: Grammar, sentence: string[]) =>
   sentence.flatMap((x) =>
-    grammar.variables.includes(x) ? grammar.rules[x].split("") : x
+    grammar.variables.includes(x) ? grammar.rules[x].split("") : x,
   );
 
 const getSentenceRec = (
   grammar: Grammar,
   n: number,
-  sentence: string[]
+  sentence: string[],
 ): string[] =>
   n === 0
     ? sentence
@@ -70,7 +70,7 @@ const rotationMatrices: RotationMatrices = {
 export const turtle3d = (
   stepSize: number,
   sentence: string[],
-  startingPoint: THREE.Vector3
+  startingPoint: THREE.Vector3,
 ) => {
   let turtlePath = [startingPoint];
   let turtleHeading = new THREE.Matrix3();
@@ -84,7 +84,9 @@ export const turtle3d = (
       // move forward
       const newPosition2: THREE.Vector3 = turtlePosition
         .clone()
-        .add(new THREE.Vector3(stepSize, 0, 0).applyMatrix3(turtleHeading).round());
+        .add(
+          new THREE.Vector3(stepSize, 0, 0).applyMatrix3(turtleHeading).round(),
+        );
       turtlePosition = newPosition2;
       turtlePath.push(newPosition2);
     }
@@ -99,7 +101,7 @@ export const genTurtle3dVectorPath = (grammar: Grammar, n: number) => {
   const startingPoint: THREE.Vector3 = new THREE.Vector3(
     -startingDistanceFromCenter,
     -startingDistanceFromCenter,
-    startingDistanceFromCenter
+    startingDistanceFromCenter,
   );
 
   return turtle3d(stepSize, sentence, startingPoint);

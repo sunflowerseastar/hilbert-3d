@@ -13,14 +13,14 @@ export type Grammar = {
 };
 
 function main() {
-/*
- * camera, scene, light, renderer
- */
+  /*
+   * camera, scene, light, renderer
+   */
   const camera = new THREE.PerspectiveCamera(
     60,
     window.innerWidth / window.innerHeight,
     1,
-    1000
+    1000,
   );
   camera.position.set(76, 58, 90);
 
@@ -60,7 +60,7 @@ function main() {
    */
   const hashIterations = Math.min(
     Math.max(1, parseInt(document.location.hash.slice(1))),
-    4
+    4,
   );
   const numIterations = !isNaN(hashIterations) ? hashIterations : 3;
 
@@ -114,7 +114,7 @@ function main() {
     pathSegments,
     tubeRadius,
     radiusSegments,
-    closed
+    closed,
   );
 
   const meshMaterial = new THREE.MeshPhongMaterial({
