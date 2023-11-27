@@ -1,4 +1,4 @@
-* Fractals 3D
+* Hilbert 3D
 
 Written with [[https://threejs.org/][three.js]].
 
