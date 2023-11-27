@@ -1,23 +1,20 @@
 import {
+  AmbientLight,
+  Color,
   DoubleSide,
+  Fog,
   Mesh,
   MeshPhongMaterial,
   PerspectiveCamera,
+  PointLight,
   Scene,
   TubeGeometry,
   WebGLRenderer,
 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
-import { createCamera } from "./threejs-helpers/camera";
-import { createScene } from "./threejs-helpers/scene";
-import { createRenderer } from "./threejs-helpers/renderer";
 import { Path3 } from "./Path3";
 import { genTurtle3dVectorPath } from "./utility";
-
-let camera: PerspectiveCamera;
-let renderer: WebGLRenderer;
-let scene: Scene;
 
 export type Grammar = {
   variables: string;
@@ -29,6 +26,60 @@ export type Grammar = {
 };
 
 function main() {
+/*
+ * camera, scene, light, renderer
+ */
+  const camera = new PerspectiveCamera(
+    60,
+    window.innerWidth / window.innerHeight,
+    1,
+    1000
+  );
+  camera.position.set(76, 58, 90);
+
+  const scene = new Scene();
+
+  scene.background = new Color(0xf4f4f4);
+
+  const ambientLight = new AmbientLight(0x000000);
+  scene.add(ambientLight);
+
+  const light1 = new PointLight(0xffffff, 1, 0);
+  light1.position.set(0, 200, 0);
+  scene.add(light1);
+
+  const light2 = new PointLight(0xffffff, 1, 0);
+  light2.position.set(100, 200, 100);
+  scene.add(light2);
+
+  const light3 = new PointLight(0xffffff, 1, 0);
+  light3.position.set(-100, -200, -100);
+  scene.add(light3);
+
+  const color = 0xffffff;
+  const near = 60;
+  const far = 280;
+  scene.fog = new Fog(color, near, far);
+
+  const renderer = new WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const container: HTMLDivElement = document.querySelector("#scene-container")!;
+  container.append(renderer.domElement);
+
+  /*
+   * use URL hash to set numIterations
+   */
+  const hashIterations = Math.min(
+    Math.max(1, parseInt(document.location.hash.slice(1))),
+    4
+  );
+  const numIterations = !isNaN(hashIterations) ? hashIterations : 3;
+
+  /*
+   * l-systems
+   */
   // note that delta of 90 is assumed
   // const hilbert2dPath: Grammar = {
   //   variables: "LR",
@@ -58,20 +109,9 @@ function main() {
     },
   };
 
-  const container: HTMLDivElement = document.querySelector("#scene-container")!;
-
-  camera = createCamera();
-  renderer = createRenderer();
-  scene = createScene();
-
-  container.append(renderer.domElement);
-
-  // use URL hash to set numIterations
-  const hashIterations = Math.min(
-    Math.max(1, parseInt(document.location.hash.slice(1))),
-    4
-  );
-  const numIterations = !isNaN(hashIterations) ? hashIterations : 3;
+  /*
+   * high-level setup
+   */
   const hilbertPath = genTurtle3dVectorPath(hilbert3dPath, numIterations);
   const path = new Path3(hilbertPath);
 
@@ -82,7 +122,7 @@ function main() {
   const radiusSegments = 32;
   const closed = false;
 
-  var geometry4 = new TubeGeometry(
+  var geometry = new TubeGeometry(
     path,
     pathSegments,
     tubeRadius,
@@ -97,7 +137,7 @@ function main() {
     side: DoubleSide,
     flatShading: false,
   });
-  const mesh = new Mesh(geometry4, meshMaterial);
+  const mesh = new Mesh(geometry, meshMaterial);
   scene.add(mesh);
 
   const controls = new OrbitControls(camera, renderer.domElement);

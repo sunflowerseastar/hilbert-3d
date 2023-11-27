@@ -5,10 +5,6 @@ class Path3 extends CatmullRomCurve3 {
     const points = this.points;
     const l = points.length;
 
-    if (l < 2) {
-      console.log("l < 2");
-    }
-
     const point = (l - 1) * t;
     let intPoint = Math.floor(point);
     let weight = point - intPoint;
