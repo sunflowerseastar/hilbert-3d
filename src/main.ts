@@ -192,6 +192,30 @@ function main() {
   controls.autoRotateSpeed = 0.2;
   controls.enableZoom = !NO_ZOOM;
 
+  // ─── pause auto-rotate while the user is interacting ──────────────────────
+  if (AUTO_ROTATE) {
+    let resumeTimeout: number | null = null;
+
+    const pause = () => {
+      controls.autoRotate = false;
+      if (resumeTimeout !== null) {
+        clearTimeout(resumeTimeout);
+        resumeTimeout = null;
+      }
+    };
+
+    const scheduleResume = () => {
+      if (resumeTimeout !== null) clearTimeout(resumeTimeout);
+      resumeTimeout = window.setTimeout(() => {
+        controls.autoRotate = true;
+        resumeTimeout = null;
+      }, 5000); // 5 s after last interaction
+    };
+
+    controls.addEventListener("start", pause);          // user began drag / pinch
+    controls.addEventListener("end",   scheduleResume); // interaction ended
+  }
+
   function render() {
     requestAnimationFrame(render);
     renderer.render(scene, camera);
