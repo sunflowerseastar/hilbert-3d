@@ -3,26 +3,51 @@ import { OrbitControls } from "./OrbitControls.js";
 import { Path3 } from "./Path3";
 import { genTurtle3dVectorPath } from "./utility";
 
-enum Theme { Light = "light", Dark = "dark" }
+enum Theme {
+  Light = "light",
+  Dark = "dark",
+}
 
 const THEMES = {
   [Theme.Light]: {
-    tubing:        0x000000,   // current black tube
-    tubingGlow:    0x242424,
-    background:    0xf4f4f4,   // current light grey
-    fog:           0xffffff,   // current white fog
+    tubing: 0x000000, // current black tube
+    tubingGlow: 0x242424,
+    background: 0xf4f4f4, // current light grey
+    fog: 0xffffff, // current white fog
   },
   [Theme.Dark]: {
-    tubing:        0xffffff,   // white tube
-    tubingGlow:    0x242424,   // leave emissive as-is
-    background:    0x000000,   // black background
-    fog:           0x000000,   // black fog
+    tubing: 0xffffff, // white tube
+    tubingGlow: 0x242424, // leave emissive as-is
+    background: 0x000000, // black background
+    fog: 0x000000, // black fog
   },
 } as const;
 
-/* pick a mode – here: “#dark” hash enables dark-mode, otherwise light-mode */
+/* --------------------------------------------------------------------------
+ * URL parameters – allow optional  ?theme=<light|dark>&iterations=<1-4>
+ * (alias “n” for iterations).  Defaults: theme=dark , iterations=3
+ * -------------------------------------------------------------------------- */
+const urlParams = new URLSearchParams(window.location.search);
+
 const CURRENT_THEME: Theme =
-  document.location.hash.startsWith("#dark") ? Theme.Dark : Theme.Light;
+  (urlParams.get("theme") ?? "").toLowerCase() === Theme.Light
+    ? Theme.Light
+    : Theme.Dark;
+
+const iterationsParam = parseInt(
+  urlParams.get("iterations") ?? urlParams.get("n") ?? "",
+  10,
+);
+const NUM_ITERATIONS = !Number.isNaN(iterationsParam)
+  ? Math.min(Math.max(iterationsParam, 1), 4)
+  : 3;
+
+// --- no-zoom flag ----------------------------------------------------------
+const NO_ZOOM = (() => {
+  const p = urlParams.get("noZoom");      // string | null
+  // truthy when the param is present and NOT explicitly "false"
+  return p !== null && p.toLowerCase() !== "false";
+})();
 
 export type Grammar = {
   variables: string;
@@ -77,15 +102,6 @@ function main() {
   container.append(renderer.domElement);
 
   /*
-   * use URL hash to set numIterations
-   */
-  const hashIterations = Math.min(
-    Math.max(1, parseInt(document.location.hash.slice(1))),
-    4,
-  );
-  const numIterations = !isNaN(hashIterations) ? hashIterations : 3;
-
-  /*
    * l-systems
    */
   // note that delta of 90 is assumed
@@ -120,13 +136,13 @@ function main() {
   /*
    * high-level setup
    */
-  const hilbertPath = genTurtle3dVectorPath(hilbert3dPath, numIterations);
+  const hilbertPath = genTurtle3dVectorPath(hilbert3dPath, NUM_ITERATIONS);
   const path = new Path3(hilbertPath);
 
-  const base = 28 - numIterations * 4;
-  const pathSegments = Math.max(Math.pow(base, numIterations), 1024);
+  const base = 28 - NUM_ITERATIONS * 4;
+  const pathSegments = Math.max(Math.pow(base, NUM_ITERATIONS), 1024);
   const tubeRadiusLookup = [2.4, 2.4, 2.4, 1.2, 0.92];
-  const tubeRadius = tubeRadiusLookup[numIterations];
+  const tubeRadius = tubeRadiusLookup[NUM_ITERATIONS];
   const radiusSegments = 32;
   const closed = false;
 
@@ -153,6 +169,7 @@ function main() {
   controls.dampingFactor = 0.3;
   controls.autoRotate = true;
   controls.autoRotateSpeed = 0.2;
+  controls.enableZoom = !NO_ZOOM;
 
   function render() {
     requestAnimationFrame(render);

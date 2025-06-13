@@ -33,3 +33,13 @@ Both ~yarn start~ and ~yarn build~ create a ~public/out.js~ bundle.
 - ~src/~ - js to be bundled
   - ~main.ts~ - entry for index.html
   - ~Path3.ts~ - helper Curve class for TubeGeometry
+
+* URL Parameters
+
+| param      | options     | default |
+|------------+-------------+---------|
+| theme      | light, dark | dark    |
+| iterations | 1, 2, 3, 4  | 3       |
+| noZoom     | true, false | false   |
+
+Example with all defaults: localhost:8080?theme=dark&iterations=3&noZoom=false
