@@ -54,6 +54,13 @@ const AUTO_ROTATE = (() => {
   return p === null || p.toLowerCase() !== "false";
 })();
 
+// --- random starting orientation ------------------------------------------
+const RANDOMIZE_START = (() => {
+  const p = urlParams.get("randomizeStartPosition");   // string | null
+  // truthy when the key is present and NOT explicitly "false"
+  return p !== null && p.toLowerCase() !== "false";
+})();
+
 export type Grammar = {
   variables: string;
   axiom: string;
@@ -167,6 +174,15 @@ function main() {
     flatShading: false,
   });
   const mesh = new THREE.Mesh(geometry, meshMaterial);
+
+  if (RANDOMIZE_START) {
+    mesh.rotation.set(
+      Math.random() * Math.PI * 2,
+      Math.random() * Math.PI * 2,
+      Math.random() * Math.PI * 2,
+    );
+  }
+
   scene.add(mesh);
 
   const controls = new OrbitControls(camera, renderer.domElement);

@@ -36,12 +36,13 @@ Both ~yarn start~ and ~yarn build~ create a ~public/out.js~ bundle.
 
 * URL Parameters
 
-| param      | options     | default |
-|------------+-------------+---------|
-| theme      | light, dark | dark    |
-| iterations | 1, 2, 3, 4  | 3       |
-| noZoom     | true, false | false   |
-| autoRotate | true, false | true    |
+| param                  | options     | default |
+|------------------------+-------------+---------|
+| theme                  | light, dark | dark    |
+| iterations             | 1, 2, 3, 4  | 3       |
+| noZoom                 | true, false | false   |
+| autoRotate             | true, false | true    |
+| randomizeStartPosition | true, false | false   |
 
 Example with all defaults:
-localhost:8080?theme=dark&iterations=3&noZoom=false&autoRotate=true
+localhost:8080?theme=dark&iterations=3&noZoom=false&autoRotate=true&randomizeStartPosition=false
