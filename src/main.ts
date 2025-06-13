@@ -3,6 +3,27 @@ import { OrbitControls } from "./OrbitControls.js";
 import { Path3 } from "./Path3";
 import { genTurtle3dVectorPath } from "./utility";
 
+enum Theme { Light = "light", Dark = "dark" }
+
+const THEMES = {
+  [Theme.Light]: {
+    tubing:        0x000000,   // current black tube
+    tubingGlow:    0x242424,
+    background:    0xf4f4f4,   // current light grey
+    fog:           0xffffff,   // current white fog
+  },
+  [Theme.Dark]: {
+    tubing:        0xffffff,   // white tube
+    tubingGlow:    0x242424,   // leave emissive as-is
+    background:    0x000000,   // black background
+    fog:           0x000000,   // black fog
+  },
+} as const;
+
+/* pick a mode – here: “#dark” hash enables dark-mode, otherwise light-mode */
+const CURRENT_THEME: Theme =
+  document.location.hash.startsWith("#dark") ? Theme.Dark : Theme.Light;
+
 export type Grammar = {
   variables: string;
   axiom: string;
@@ -26,7 +47,7 @@ function main() {
 
   const scene = new THREE.Scene();
 
-  scene.background = new THREE.Color(0xf4f4f4);
+  scene.background = new THREE.Color(THEMES[CURRENT_THEME].background);
 
   const ambientLight = new THREE.AmbientLight(0x000000);
   scene.add(ambientLight);
@@ -43,10 +64,10 @@ function main() {
   light3.position.set(-100, -200, -100);
   scene.add(light3);
 
-  const color = 0xffffff;
+  const fogColor = THEMES[CURRENT_THEME].fog;
   const near = 60;
   const far = 280;
-  scene.fog = new THREE.Fog(color, near, far);
+  scene.fog = new THREE.Fog(fogColor, near, far);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -118,8 +139,8 @@ function main() {
   );
 
   const meshMaterial = new THREE.MeshPhongMaterial({
-    color: 0x000000,
-    emissive: 0x242424,
+    color: THEMES[CURRENT_THEME].tubing,
+    emissive: THEMES[CURRENT_THEME].tubingGlow,
     shininess: 100,
     side: THREE.DoubleSide,
     flatShading: false,
