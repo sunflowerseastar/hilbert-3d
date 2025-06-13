@@ -41,5 +41,7 @@ Both ~yarn start~ and ~yarn build~ create a ~public/out.js~ bundle.
 | theme      | light, dark | dark    |
 | iterations | 1, 2, 3, 4  | 3       |
 | noZoom     | true, false | false   |
+| autoRotate | true, false | true    |
 
-Example with all defaults: localhost:8080?theme=dark&iterations=3&noZoom=false
+Example with all defaults:
+localhost:8080?theme=dark&iterations=3&noZoom=false&autoRotate=true

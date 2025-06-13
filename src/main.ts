@@ -42,11 +42,16 @@ const NUM_ITERATIONS = !Number.isNaN(iterationsParam)
   ? Math.min(Math.max(iterationsParam, 1), 4)
   : 3;
 
-// --- no-zoom flag ----------------------------------------------------------
 const NO_ZOOM = (() => {
-  const p = urlParams.get("noZoom");      // string | null
+  const p = urlParams.get("noZoom"); // string | null
   // truthy when the param is present and NOT explicitly "false"
   return p !== null && p.toLowerCase() !== "false";
+})();
+
+const AUTO_ROTATE = (() => {
+  const p = urlParams.get("autoRotate"); // string | null
+  // default = true → rotate unless the param is explicitly "false"
+  return p === null || p.toLowerCase() !== "false";
 })();
 
 export type Grammar = {
@@ -167,7 +172,7 @@ function main() {
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.3;
-  controls.autoRotate = true;
+  controls.autoRotate = AUTO_ROTATE;
   controls.autoRotateSpeed = 0.2;
   controls.enableZoom = !NO_ZOOM;
 
