@@ -8,21 +8,6 @@ enum Theme {
   Dark = "dark",
 }
 
-const THEMES = {
-  [Theme.Light]: {
-    tubing: 0x000000, // current black tube
-    tubingGlow: 0x242424,
-    background: 0xf4f4f4, // current light grey
-    fog: 0xffffff, // current white fog
-  },
-  [Theme.Dark]: {
-    tubing: 0xffffff, // white tube
-    tubingGlow: 0x242424, // leave emissive as-is
-    background: 0x000000, // black background
-    fog: 0x000000, // black fog
-  },
-} as const;
-
 /* --------------------------------------------------------------------------
  * URL parameters – allow optional  ?theme=<light|dark>&iterations=<1-4>
  * (alias “n” for iterations).  Defaults: theme=dark , iterations=3
@@ -56,10 +41,32 @@ const AUTO_ROTATE = (() => {
 
 // --- random starting orientation ------------------------------------------
 const RANDOMIZE_START = (() => {
-  const p = urlParams.get("randomizeStartPosition");   // string | null
+  const p = urlParams.get("randomizeStartPosition"); // string | null
   // truthy when the key is present and NOT explicitly "false"
   return p !== null && p.toLowerCase() !== "false";
 })();
+
+// --- extra lighting option for dramatic colorful lighting ----------------
+const EXTRA_LIGHTING = (() => {
+  const p = urlParams.get("extraLighting"); // string | null
+  // truthy when the param is present and NOT explicitly "false"
+  return p !== null && p.toLowerCase() !== "false";
+})();
+
+const THEMES = {
+  [Theme.Light]: {
+    tubing: 0x000000, // current black tube
+    tubingGlow: 0x242424,
+    background: 0xf4f4f4, // current light grey
+    fog: 0xffffff, // current white fog
+  },
+  [Theme.Dark]: {
+    tubing: EXTRA_LIGHTING ? 0x030303 : 0xe8e8e8, // black tube for extraLighting, softer off-white otherwise
+    tubingGlow: EXTRA_LIGHTING ? 0x000000 : 0x1a1a1a, // no emissive for extraLighting, subtle glow otherwise
+    background: 0x000000, // black background
+    fog: 0x000000, // black fog
+  },
+} as const;
 
 export type Grammar = {
   variables: string;
@@ -80,26 +87,78 @@ function main() {
     1,
     1000,
   );
-  camera.position.set(76, 58, 90);
+  // Adjust camera zoom based on iterations - smaller curves need closer view
+  const cameraDistance =
+    NUM_ITERATIONS >= 4
+      ? { x: 76, y: 15, z: 140 }
+      : NUM_ITERATIONS === 3
+        ? { x: 76, y: 15, z: 95 }
+        : NUM_ITERATIONS === 2
+          ? { x: 68, y: 13, z: 85 }
+          : { x: 60, y: 11, z: 0 };
+
+  camera.position.set(cameraDistance.x, cameraDistance.y, cameraDistance.z);
 
   const scene = new THREE.Scene();
 
   scene.background = new THREE.Color(THEMES[CURRENT_THEME].background);
 
-  const ambientLight = new THREE.AmbientLight(0x000000);
+  const ambientLight = new THREE.AmbientLight(
+    EXTRA_LIGHTING
+      ? 0xffffff
+      : CURRENT_THEME === Theme.Dark
+        ? 0x202020
+        : 0x000000,
+    EXTRA_LIGHTING ? 0.2 : 1,
+  );
   scene.add(ambientLight);
 
-  const light1 = new THREE.PointLight(0xffffff, 1, 0);
+  const light1 = new THREE.PointLight(
+    0xffffff,
+    EXTRA_LIGHTING ? 1.5 : CURRENT_THEME === Theme.Dark ? 0.4 : 1,
+    0,
+  );
   light1.position.set(0, 200, 0);
   scene.add(light1);
 
-  const light2 = new THREE.PointLight(0xffffff, 1, 0);
+  const light2 = new THREE.PointLight(
+    0xffffff,
+    EXTRA_LIGHTING ? 1.5 : CURRENT_THEME === Theme.Dark ? 0.6 : 1,
+    0,
+  );
   light2.position.set(100, 200, 100);
   scene.add(light2);
 
-  const light3 = new THREE.PointLight(0xffffff, 1, 0);
+  const light3 = new THREE.PointLight(
+    0xffffff,
+    EXTRA_LIGHTING ? 1.5 : CURRENT_THEME === Theme.Dark ? 0.5 : 1,
+    0,
+  );
   light3.position.set(-100, -200, -100);
   scene.add(light3);
+
+  // ─── extra pastel point-lights for dark-mode with extraLighting ──────────
+  if (CURRENT_THEME === Theme.Dark && EXTRA_LIGHTING) {
+    const palette = [
+      0xff8c94, 0xfaedb9, 0xb9e5a1, 0x91cdf2, 0xa8e5dc, 0xd0d0ff, 0x8abeb7,
+    ] as const;
+
+    const positions = [
+      [100, 100, 100],
+      [-100, -100, 100],
+      [-100, 100, -100],
+      [100, -100, -100],
+      [0, 200, 0],
+      [200, 0, 0],
+      [-200, 0, 0],
+    ] as const;
+
+    palette.forEach((col, i) => {
+      const light = new THREE.PointLight(col, 0.6, 600); // a bit stronger
+      light.position.set(...positions[i]);
+      scene.add(light);
+    });
+  }
 
   const fogColor = THEMES[CURRENT_THEME].fog;
   const near = 60;
@@ -212,8 +271,8 @@ function main() {
       }, 5000); // 5 s after last interaction
     };
 
-    controls.addEventListener("start", pause);          // user began drag / pinch
-    controls.addEventListener("end",   scheduleResume); // interaction ended
+    controls.addEventListener("start", pause); // user began drag / pinch
+    controls.addEventListener("end", scheduleResume); // interaction ended
   }
 
   function render() {

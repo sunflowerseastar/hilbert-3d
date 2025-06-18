@@ -43,6 +43,7 @@ Both ~yarn start~ and ~yarn build~ create a ~public/out.js~ bundle.
 | noZoom                 | true, false | false   |
 | autoRotate             | true, false | true    |
 | randomizeStartPosition | true, false | false   |
+| extraLighting          | true, false | false   |
 
 Example with all defaults:
 localhost:8080?theme=dark&iterations=3&noZoom=false&autoRotate=true&randomizeStartPosition=false
